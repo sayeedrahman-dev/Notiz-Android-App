@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.keepScreenOn
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -71,20 +72,20 @@ fun WelcomeScreen(){
             Spacer(modifier = Modifier.height(30.dp))
 
             Text(
-                text = "Organized your ideas,\n" +
-                        "            beautifully",
+                text = "Organized your ideas,\n beautifully",
                 fontSize = 30.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
 
             )
 
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(
-                text = "Capture thoughts, manage tasks, and access,\n" +
-                        "            your notes seamlessly anywhere.",
+                text = "Capture thoughts, manage tasks, and access,\n your notes seamlessly anywhere.",
                 fontSize = 14.sp,
-                color = Color.Gray
+                color = Color.Gray,
+                textAlign = TextAlign.Center
             )
 
             Spacer(modifier = Modifier.height(120.dp))

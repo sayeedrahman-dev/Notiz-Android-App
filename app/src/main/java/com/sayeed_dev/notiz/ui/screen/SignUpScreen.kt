@@ -53,8 +53,10 @@ import com.sayeed_dev.notiz.ui.theme.PrimaryDark
 @Composable
 fun SignUpScreen() {
 
+    var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
     Box(
@@ -110,8 +112,8 @@ fun SignUpScreen() {
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
                         OutlinedTextField(
-                            value = email,
-                            onValueChange = { email = it },
+                            value = fullName,
+                            onValueChange = { fullName = it },
                             modifier = Modifier.fillMaxWidth(),
                             placeholder = { Text("Full Name", color = Color.Gray) },
                             shape = RoundedCornerShape(12.dp),
@@ -199,8 +201,8 @@ fun SignUpScreen() {
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
                         OutlinedTextField(
-                            value = password,
-                            onValueChange = { password = it },
+                            value = confirmPassword,
+                            onValueChange = { confirmPassword = it },
                             modifier = Modifier.fillMaxWidth(),
                             placeholder = { Text("Confirm Password",
                                 color = Color.Gray) },
