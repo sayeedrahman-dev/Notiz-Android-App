@@ -40,7 +40,7 @@ import com.sayeed_dev.notiz.ui.theme.BackgroundCream
 import com.sayeed_dev.notiz.ui.theme.ButtonColor
 
 @Composable
-fun EmptyHomeScreen() {
+fun EmptyHomeScreen(onNavigateToMenu: () -> Unit = {}) {
     Scaffold(
         containerColor = BackgroundCream,
         topBar = {

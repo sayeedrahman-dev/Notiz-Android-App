@@ -1,64 +1,38 @@
-# Notiz Professional Workflow & Roadmap (3 Days)
+# Home Screen: Notes List & Grid View Plan
 
 Bismillah.
 
-Ekjon professional Android developer jokhon Figma design pay, ora sorasori code shuru kore na. Ora prothome kichu step follow kore jeta amra amader ei project-e follow korbo insha allah.
+Alhamdulillah, apnar app-ta thikmoto run hoyeche ebong navigation kaj korche—eta ekta boro shofolota! Ekhon amra apnar app-er main feature-e hat dibo: **Notes dekhano**.
 
-## Professional Developer's Workflow
+Figma design onujayi, jokhon user note likhbe, tokhon seta grid view-te sundorvabe dekhate hbe.
 
-1.  **Requirement Analysis**: Figma file-er shob screen dekhe bujhe neya (Koyta screen? Ek screen theke arek screen-e kibabe jabe?).
-2.  **Asset Extraction**: Icons, images, ebong specific colors Figma theke neya.
-3.  **Project Structure**: Folders gulo organize kora (e.g., `ui`, `data`, `navigation`).
-4.  **Theming**: Figma-er color ebong font gulo app-er `Theme.kt` te define kora.
-5.  **Navigation Setup**: App-er navigation graph banano.
-6.  **Feature Implementation**: Ekta ekta feature (e.g., Auth, Home, Note) dore dore shesh kora.
+## User Review Required
 
----
+> [!IMPORTANT]
+> Amra ekhon `EmptyHomeScreen.kt`-ke refine kore ekta dynamic **`HomeScreen.kt`** banabo jeta automatic bujhte parbe note ache ki nei.
 
-## Professional 3-Day Roadmap for NOTIz
+## Proposed Changes
 
-### Day 1: Foundation & Authentication
-*   **Project Structure**: Folder setup (ui, navigation, model).
-*   **Theming**: Figma color palette (e.g., `#F5F2E9` for background) app-e apply kora.
-*   **Navigation**: `NavHost` setup kora (Welcome -> Login -> Sign Up).
-*   **Screens**: Welcome, Login, ebong Sign Up screen Figma-er moto exact design kora.
+### [Component Name] - Home Experience
 
-### Day 2: Data & Home Experience
-*   **Data Model**: Note-er jonno `Note` data class banano.
-*   **Home Screen (States)**: Empty state (No notes yet) ebong Note list state design kora.
-*   **Components**: Reusable card design kora (Note Card).
-*   **Search UI**: Home screen-er search bar setup kora.
+#### [NEW] [NoteCard.kt](file:///D:/Notiz/app/src/main/java/com/sayeed_dev/notiz/ui/components/NoteCard.kt)
+Figma-er moto ekta sundor card design kora jekhane Note-er Title, Content ebong Date thakbe.
 
-### Day 3: Note Operations & Polishing
-*   **Add/Edit Note**: Note lekhar ebong edit korar screen.
-*   **State Management**: Note save ebong delete korar logic (Simple List based).
-*   **Final Polishing**: Figma-er protiti pixel check kore final touch deya.
+#### [RENAME & MODIFY] [HomeScreen.kt](file:///D:/Notiz/app/src/main/java/com/sayeed_dev/notiz/ui/screen/HomeScreen.kt)
+`EmptyHomeScreen.kt` file-tar nam change kore `HomeScreen.kt` kora hobe ebong ekhane logic add kora hbe:
+- **Condition:** Jodi `notes.isEmpty()` hoy, tobe "Empty State" dekhabe.
+- **Condition:** Jodi `notes.isNotEmpty()` hoy, tobe "Grid List" dekhabe.
 
----
-
-## Day 1: Implementation Details
-
-### Step 1: Project Organization [NEW]
-Folder structure reorganize kora:
-- `com.sayeed_dev.notiz.ui.navigation`
-- `com.sayeed_dev.notiz.ui.theme`
-- `com.sayeed_dev.notiz.model`
-
-### Step 2: Custom Theme [MODIFY]
-Figma theke neya exact colors (Bg: #F5F2E9, Text: #454B54) `Color.kt` ebong `Theme.kt` te set kora.
-
-### Step 3: Auth Screens [MODIFY/NEW]
-- **WelcomeScreen**: Figma icon/text layout exact kora.
-- **LoginScreen**: Input fields refine kora.
-- **SignUpScreen**: Figma onujayi notun screen banano.
+#### [MODIFY] [NavGraph.kt](file:///D:/Notiz/app/src/main/java/com/sayeed_dev/notiz/ui/navigation/NavGraph.kt)
+Renamed `HomeScreen`-er sathe connection update kora.
 
 ---
 
 ## Verification Plan
 
 ### Manual Verification
-- NavHost-er maddhome protiti screen-e thikvabe jawa jachhe kina.
-- Custom colors gulo Figma-er moto thikvabe show korche kina.
+- App-e login korar por Home-e jawon.
+- Dummy data add kore dekha je notes gulo grid-e thikmoto asche kina.
+- Pinned notes-er header thikmoto dekhachhe kina check kora.
 
-Alhamdulillah.
-
+Alhamdulillah. Apni ki Notes List design shuru korar jonno ready?

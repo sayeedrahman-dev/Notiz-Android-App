@@ -39,7 +39,10 @@ import com.sayeed_dev.notiz.ui.theme.ButtonColor
 import com.sayeed_dev.notiz.ui.theme.PrimaryDark
 
 @Composable
-fun WelcomeScreen(){
+fun WelcomeScreen(
+    onNavigateToLogin: ( ) -> Unit,
+    onNavigateToSignUp: ( ) -> Unit
+){
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -88,10 +91,10 @@ fun WelcomeScreen(){
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(120.dp))
+            Spacer(modifier = Modifier.height(170.dp))
 
             Button(
-                onClick = {  },
+                onClick = { onNavigateToLogin( ) },
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
                     .height(54.dp),
@@ -118,7 +121,7 @@ fun WelcomeScreen(){
                     fontSize = 14.sp,
                     color = AccentBlue,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.clickable {  })
+                    modifier = Modifier.clickable { onNavigateToSignUp() })
             }
         }
     }
@@ -127,5 +130,8 @@ fun WelcomeScreen(){
 @Preview(showBackground = true)
 @Composable
 fun WelcomeScreenPreview() {
-    WelcomeScreen()
+    WelcomeScreen(
+        onNavigateToLogin = {},
+        onNavigateToSignUp = {}
+    )
 }

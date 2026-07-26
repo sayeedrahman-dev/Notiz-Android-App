@@ -51,7 +51,9 @@ import com.sayeed_dev.notiz.ui.theme.PrimaryDark
 
 
 @Composable
-fun SignUpScreen() {
+fun SignUpScreen(
+    onNavigateToLogin: () -> Unit
+) {
 
     var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -266,7 +268,7 @@ fun SignUpScreen() {
                     fontSize = 14.sp,
                     color = AccentBlue,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.clickable {  })
+                    modifier = Modifier.clickable { onNavigateToLogin()})
             }
         }
     }
@@ -275,5 +277,5 @@ fun SignUpScreen() {
 @Preview(showBackground = true)
 @Composable
 fun SignUpScreenPreview() {
-    SignUpScreen()
+
 }
