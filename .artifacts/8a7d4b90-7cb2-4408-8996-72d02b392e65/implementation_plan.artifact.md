@@ -1,38 +1,37 @@
-# Home Screen: Notes List & Grid View Plan
+# Permanent Data Storage: Room Database Integration
 
 Bismillah.
 
-Alhamdulillah, apnar app-ta thikmoto run hoyeche ebong navigation kaj korche—eta ekta boro shofolota! Ekhon amra apnar app-er main feature-e hat dibo: **Notes dekhano**.
+Alhamdulillah, apnar app-er UI ebong Navigation ekhon ekdom solid! Ekhon amader ashol target holo app-ke **"Permanent"** banano. Er mane holo, user jokhon note save korbe, seta jate phone-er memory-te thake ebong app bondho korle muche na jay.
 
-Figma design onujayi, jokhon user note likhbe, tokhon seta grid view-te sundorvabe dekhate hbe.
-
-## User Review Required
-
-> [!IMPORTANT]
-> Amra ekhon `EmptyHomeScreen.kt`-ke refine kore ekta dynamic **`HomeScreen.kt`** banabo jeta automatic bujhte parbe note ache ki nei.
+Ekjon professional developer eta korar jonno Android-er official **Room Database** use kore.
 
 ## Proposed Changes
 
-### [Component Name] - Home Experience
+### [Component Name] - Data Layer (Room DB)
 
-#### [NEW] [NoteCard.kt](file:///D:/Notiz/app/src/main/java/com/sayeed_dev/notiz/ui/components/NoteCard.kt)
-Figma-er moto ekta sundor card design kora jekhane Note-er Title, Content ebong Date thakbe.
+#### [MODIFY] [libs.versions.toml](file:///D:/Notiz/gradle/libs.versions.toml) & [build.gradle.kts](file:///D:/Notiz/app/build.gradle.kts)
+Database library (**Room**) ebong tar annotations processor add kora hbe.
 
-#### [RENAME & MODIFY] [HomeScreen.kt](file:///D:/Notiz/app/src/main/java/com/sayeed_dev/notiz/ui/screen/HomeScreen.kt)
-`EmptyHomeScreen.kt` file-tar nam change kore `HomeScreen.kt` kora hobe ebong ekhane logic add kora hbe:
-- **Condition:** Jodi `notes.isEmpty()` hoy, tobe "Empty State" dekhabe.
-- **Condition:** Jodi `notes.isNotEmpty()` hoy, tobe "Grid List" dekhabe.
+#### [MODIFY] [Note.kt](file:///D:/Notiz/app/src/main/java/com/sayeed_dev/notiz/model/Note.kt)
+`Note` data class-ke Room **Entity**-te convert kora hbe jate database eta "Table" hisebe chinhte pare.
 
-#### [MODIFY] [NavGraph.kt](file:///D:/Notiz/app/src/main/java/com/sayeed_dev/notiz/ui/navigation/NavGraph.kt)
-Renamed `HomeScreen`-er sathe connection update kora.
+#### [NEW] [NoteDao.kt](file:///D:/Notiz/app/src/main/java/com/sayeed_dev/notiz/data/NoteDao.kt)
+Database-er sathe kotha bolar jonno Commands (Query, Insert, Delete) toiri kora hbe.
+
+#### [NEW] [NoteDatabase.kt](file:///D:/Notiz/app/src/main/java/com/sayeed_dev/notiz/data/NoteDatabase.kt)
+Puro database setup handle korar jonno main class toiri kora hbe.
+
+#### [MODIFY] [HomeScreen.kt](file:///D:/Notiz/app/src/main/java/com/sayeed_dev/notiz/ui/screen/HomeScreen.kt)
+Dummy data (List) bad diye database theke real notes load korar logic add kora hbe.
 
 ---
 
 ## Verification Plan
 
 ### Manual Verification
-- App-e login korar por Home-e jawon.
-- Dummy data add kore dekha je notes gulo grid-e thikmoto asche kina.
-- Pinned notes-er header thikmoto dekhachhe kina check kora.
+1. App run kore notun note add korun.
+2. Home screen-e note-ta dekhachhe কিনা check korun.
+3. App puro bondho (Force close) kore abar open korun. Check korun note-ta permanent-vabe save ache কিনা.
 
-Alhamdulillah. Apni ki Notes List design shuru korar jonno ready?
+Alhamdulillah. Apni ki ready app-ke permanent data support deyar jonno? Approved korle amra dependency add kora shuru korbo insha allah.

@@ -6,7 +6,7 @@ data class Note(
     val title: String,
     val content: String,
     val timestamp: Long,
-    val inPinned: Boolean = false,
+    val isPinned: Boolean = false,
     val color: Int = 0xFFFFFFFF.toInt()
     
 )

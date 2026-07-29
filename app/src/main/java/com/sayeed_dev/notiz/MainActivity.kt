@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.sayeed_dev.notiz.data.SessionManager
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -17,10 +18,13 @@ import com.sayeed_dev.notiz.ui.theme.NotizTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val sessionManager = SessionManager(this)
+        val isLoggedIn = sessionManager.isLoggedIn()
         enableEdgeToEdge()
         setContent {
             NotizTheme {
-                NotizNavGraph()
+                NotizNavGraph(isLoggedIn = isLoggedIn)
             }
         }
     }
