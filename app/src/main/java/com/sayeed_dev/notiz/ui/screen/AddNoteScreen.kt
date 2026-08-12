@@ -2,37 +2,19 @@ package com.sayeed_dev.notiz.ui.screen
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.filled.Save
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.outlined.PushPin
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -47,21 +29,34 @@ import com.sayeed_dev.notiz.ui.theme.PrimaryDark
 
 @Composable
 fun AddNoteScreen(
+    initialId: Int = 0,
+    initialTitle: String = "",
+    initialContent: String = "",
+    initialIsPinned: Boolean = false,
     onBackClick: () -> Unit,
-    onSaveClick: (String, String) -> Unit
+    onSaveClick: (String, String, Boolean) -> Unit,
+    onDeleteClick: () -> Unit = {}
 ) {
-    // 1. States for Input
-    var title by remember { mutableStateOf("") }
-    var content by remember { mutableStateOf("") }
-    var showDialog by remember { mutableStateOf(false) }
+    // 1. States for Input and UI logic
+    var title by remember { mutableStateOf(initialTitle) }
+    var content by remember { mutableStateOf(initialContent) }
+    var isPinned by remember { mutableStateOf(initialIsPinned) }
+    
+    var showExitDialog by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
+    val isEditMode = initialId != 0
+    val screenHeader = if (!isEditMode) "New Note" else "Edit Note"
+
+    // Logic: Back button block kora jate data loss na hoy
     BackHandler {
-        // Jodi title ba content-e kichu likha thake, tobe dialog dekhaw
         if (title.isNotEmpty() || content.isNotEmpty()) {
-            showDialog = true
+            showExitDialog = true
         } else {
-            onBackClick() // Khali thakle sorasori back jabe
+            onBackClick()
         }
     }
+
     Scaffold(
         containerColor = BackgroundCream,
         topBar = {
@@ -79,7 +74,13 @@ fun AddNoteScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     // Back Button
-                    IconButton(onClick = onBackClick) {
+                    IconButton(onClick = {
+                        if (title.isNotEmpty() || content.isNotEmpty()) {
+                            showExitDialog = true
+                        } else {
+                            onBackClick()
+                        }
+                    }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
@@ -88,9 +89,9 @@ fun AddNoteScreen(
                         )
                     }
 
-                    // Spacing + Title
+                    // Dynamic Title (New Note / Edit Note)
                     Text(
-                        text = "New Note",
+                        text = screenHeader,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.ExtraBold,
                         color = PrimaryDark,
@@ -99,8 +100,32 @@ fun AddNoteScreen(
 
                     Spacer(modifier = Modifier.weight(1f))
 
-                    // Save Icon
-                    IconButton(onClick = { onSaveClick(title, content) }) {
+                    // --- Professional Options Row ---
+                    
+                    // 1. Pin Icon (Toggle logic)
+                    IconButton(onClick = { isPinned = !isPinned }) {
+                        Icon(
+                            imageVector = if (isPinned) Icons.Filled.PushPin else Icons.Outlined.PushPin,
+                            contentDescription = "Pin",
+                            modifier = Modifier.size(24.dp),
+                            tint = if (isPinned) Color(0xFFE91E63) else PrimaryDark 
+                        )
+                    }
+
+                    // 2. Delete Icon (Shudhu Edit mode-e dekhabe)
+                    if (isEditMode) {
+                        IconButton(onClick = { showDeleteDialog = true }) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Delete",
+                                modifier = Modifier.size(26.dp),
+                                tint = Color.Gray
+                            )
+                        }
+                    }
+
+                    // 3. Save Icon
+                    IconButton(onClick = { onSaveClick(title, content, isPinned) }) {
                         Icon(
                             imageVector = Icons.Default.Save,
                             contentDescription = "Save",
@@ -111,7 +136,6 @@ fun AddNoteScreen(
                 }
             }
         }
-
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -126,18 +150,10 @@ fun AddNoteScreen(
                 value = title,
                 onValueChange = { title = it },
                 placeholder = {
-                    Text(
-                        "Note Title",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.ExtraBold
-                    )
+                    Text("Note Title", fontSize = 24.sp, fontWeight = FontWeight.ExtraBold)
                 },
                 modifier = Modifier.fillMaxWidth(),
-                textStyle = TextStyle(
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = PrimaryDark
-                ),
+                textStyle = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold, color = PrimaryDark),
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
@@ -166,23 +182,22 @@ fun AddNoteScreen(
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
             )
         }
-        if (showDialog) {
+
+        // --- Dialogs Section ---
+
+        // 1. Exit Confirmation Dialog
+        if (showExitDialog) {
             AlertDialog(
-                onDismissRequest = { showDialog = false },
+                onDismissRequest = { showExitDialog = false },
                 containerColor = BackgroundCream,
                 shape = RoundedCornerShape(28.dp),
                 title = {
-                    Text(
-                        text = "Save this note?",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = PrimaryDark
-                    )
+                    Text("Save changes?", fontSize = 18.sp, fontWeight = FontWeight.ExtraBold, color = PrimaryDark)
                 },
                 confirmButton = {
                     TextButton(onClick = {
-                        onSaveClick(title, content)
-                        showDialog = false
+                        onSaveClick(title, content, isPinned)
+                        showExitDialog = false
                     }) {
                         Text("Save", color = PrimaryDark, fontWeight = FontWeight.Bold)
                     }
@@ -190,6 +205,38 @@ fun AddNoteScreen(
                 dismissButton = {
                     TextButton(onClick = { onBackClick() }) {
                         Text("Discard", color = Color.Gray)
+                    }
+                }
+            )
+        }
+
+        // 2. Delete Confirmation Dialog
+        if (showDeleteDialog) {
+            AlertDialog(
+                onDismissRequest = { showDeleteDialog = false },
+                containerColor = Color.White,
+                shape = RoundedCornerShape(28.dp),
+                title = {
+                    Text("Delete this note?", fontSize = 18.sp, fontWeight = FontWeight.ExtraBold, color = Color.Red)
+                },
+                text = {
+                    Text("This action cannot be undone. Are you sure?", fontSize = 14.sp)
+                },
+                confirmButton = {
+                    Button(
+                        onClick = { 
+                            onDeleteClick() 
+                            showDeleteDialog = false
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                        shape = RoundedCornerShape(100.dp)
+                    ) {
+                        Text("Delete", color = Color.White)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDeleteDialog = false }) {
+                        Text("Cancel", color = Color.Gray)
                     }
                 }
             )
@@ -202,6 +249,6 @@ fun AddNoteScreen(
 fun AddNoteScreenPreview() {
     AddNoteScreen(
         onBackClick = {},
-        onSaveClick = { _, _ -> }
+        onSaveClick = { _, _, _ -> }
     )
 }

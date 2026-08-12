@@ -1,8 +1,12 @@
 package com.sayeed_dev.notiz.model
 
-data class Note(
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
-    val id: Int,
+@Entity(tableName = "notes")
+data class Note(
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
     val title: String,
     val content: String,
     val timestamp: Long,

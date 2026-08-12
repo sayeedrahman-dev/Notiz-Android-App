@@ -1,21 +1,16 @@
 package com.sayeed_dev.notiz.ui.screen
 
-
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,16 +20,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sayeed_dev.notiz.model.Note
 import com.sayeed_dev.notiz.ui.components.NoteCard
 import com.sayeed_dev.notiz.ui.theme.BackgroundCream
 import com.sayeed_dev.notiz.ui.theme.ButtonColor
+import com.sayeed_dev.notiz.ui.viewmodel.NoteViewModel
 
 @Composable
-fun HomeScreen(onAddNoteClick: () -> Unit) {
+fun HomeScreen(
+    onAddNoteClick: () -> Unit,
+    onNoteClick: (Note) -> Unit,
+    viewModel : NoteViewModel = viewModel()
+) {
     val context = LocalContext.current
     var lastBackPressTime by remember { mutableStateOf(0L) }
 
+    // Double tap to exit logic
     BackHandler {
         val currentTime = System.currentTimeMillis()
         if (currentTime - lastBackPressTime < 2000) {
@@ -44,18 +46,18 @@ fun HomeScreen(onAddNoteClick: () -> Unit) {
             lastBackPressTime = currentTime
         }
     }
-    // 1. Dummy Data with Pinned logic
-    val notes = listOf(
-        Note(1, "The time", "Meeting with team at 10 AM", System.currentTimeMillis(), isPinned = true),
-        Note(2, "Idea", "Build a minimal note app with Buddy", System.currentTimeMillis(), isPinned = true),
-        Note(3, "Bazaar List", "Egg, Milk, Potato, Bread...", System.currentTimeMillis()),
-        Note(4, "Reminder", "Submit the project by tonight.", System.currentTimeMillis()),
-        Note(5, "New Idea", "Logic for multiple notes is working!", System.currentTimeMillis(), isPinned = false)
-    )
 
-    // Separate notes into two lists
-    val pinnedNotes = notes.filter { it.isPinned }.take(6)
-    val recentNotes = notes.filter { !it.isPinned }.take(6)
+    // 🚀 ১. ভিউমডেল থেকে সার্চ টেক্সট এবং লাইভ নোট লিস্ট রিড করা হচ্ছে
+    val searchText by viewModel.searchQuery.collectAsState()
+    val notes by viewModel.allNotes.collectAsState(initial = emptyList())
+
+    // 🚀 মেমোরি বাঁচানোর জন্য derivedStateOf ব্যবহার করা হয়েছে
+    val pinnedNotes by remember(notes) {
+        derivedStateOf { notes.filter { it.isPinned } }
+    }
+    val recentNotes by remember(notes) {
+        derivedStateOf { notes.filter { !it.isPinned } }
+    }
 
     Scaffold(
         containerColor = BackgroundCream,
@@ -68,7 +70,7 @@ fun HomeScreen(onAddNoteClick: () -> Unit) {
             ) {
                 Icon(
                     imageVector = Icons.Default.Menu,
-                    "Menu",
+                    contentDescription = "Menu",
                     tint = Color.Black,
                     modifier = Modifier
                         .size(32.dp)
@@ -87,7 +89,7 @@ fun HomeScreen(onAddNoteClick: () -> Unit) {
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { onAddNoteClick() }, // CONNECTED TO NAVIGATION
+                onClick = onAddNoteClick,
                 containerColor = ButtonColor,
                 contentColor = Color.White,
                 shape = RoundedCornerShape(100.dp),
@@ -102,10 +104,10 @@ fun HomeScreen(onAddNoteClick: () -> Unit) {
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // 2. Search Bar Section
+            // 🚀 ২. সার্চ বারকে ভিউমডেলের সাথে কানেক্ট করা হলো
             OutlinedTextField(
-                value = "",
-                onValueChange = {},
+                value = searchText, 
+                onValueChange = { viewModel.onSearchQueryChanged(it) }, 
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
                 placeholder = { Text("Search notes", color = Color.Gray, fontSize = 14.sp) },
                 leadingIcon = { Icon(Icons.Default.Search, null, tint = Color.Gray) },
@@ -119,18 +121,21 @@ fun HomeScreen(onAddNoteClick: () -> Unit) {
                 singleLine = true
             )
 
-            // 3. Conditional Content
             if (notes.isEmpty()) {
                 EmptyNotesState()
             } else {
-                NotesContentWithSections(pinnedNotes, recentNotes)
+                NotesContentWithSections(pinnedNotes, recentNotes, onNoteClick)
             }
         }
     }
 }
 
 @Composable
-fun NotesContentWithSections(pinnedNotes: List<Note>, recentNotes: List<Note>) {
+fun NotesContentWithSections(
+    pinnedNotes: List<Note>,
+    recentNotes: List<Note>,
+    onNoteClick: (Note) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -148,7 +153,11 @@ fun NotesContentWithSections(pinnedNotes: List<Note>, recentNotes: List<Note>) {
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     rowNotes.forEach { note ->
-                        NoteCard(note = note, modifier = Modifier.weight(1f))
+                        NoteCard(
+                            note = note, 
+                            modifier = Modifier.weight(1f),
+                            onClick = { onNoteClick(note) }
+                        )
                     }
                     repeat(3 - rowNotes.size) {
                         Spacer(modifier = Modifier.weight(1f))
@@ -171,7 +180,11 @@ fun NotesContentWithSections(pinnedNotes: List<Note>, recentNotes: List<Note>) {
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     rowNotes.forEach { note ->
-                        NoteCard(note = note, modifier = Modifier.weight(1f))
+                        NoteCard(
+                            note = note, 
+                            modifier = Modifier.weight(1f),
+                            onClick = { onNoteClick(note) }
+                        )
                     }
                     repeat(3 - rowNotes.size) {
                         Spacer(modifier = Modifier.weight(1f))
@@ -204,5 +217,5 @@ fun EmptyNotesState() {
 @Preview(showBackground = true, name = "Home with Notes")
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen(onAddNoteClick = {})
+    HomeScreen(onAddNoteClick = {}, onNoteClick = {})
 }
