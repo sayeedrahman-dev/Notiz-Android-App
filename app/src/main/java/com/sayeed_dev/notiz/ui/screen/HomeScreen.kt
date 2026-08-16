@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -110,7 +111,16 @@ fun HomeScreen(
                 onValueChange = { viewModel.onSearchQueryChanged(it) }, 
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
                 placeholder = { Text("Search notes", color = Color.Gray, fontSize = 14.sp) },
-                leadingIcon = { Icon(Icons.Default.Search, null, tint = Color.Gray) },
+                leadingIcon = if (searchText.isEmpty()) {
+                    { Icon(Icons.Default.Search, null, tint = Color.Gray) }
+                } else null,
+                trailingIcon = if (searchText.isNotEmpty()) {
+                    {
+                        IconButton(onClick = { viewModel.onSearchQueryChanged("") }) {
+                            Icon(Icons.Default.Close, contentDescription = "Clear", tint = Color.Gray)
+                        }
+                    }
+                } else null,
                 shape = RoundedCornerShape(100.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = Color.White,
@@ -142,12 +152,12 @@ fun NotesContentWithSections(
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 24.dp, vertical = 20.dp)
     ) {
-        // --- Recent Notes Section ---
-        if (recentNotes.isNotEmpty()) {
-            Text(text = "Recent Notes", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+        // --- Pinned Notes Section (সবার উপরে) ---
+        if (pinnedNotes.isNotEmpty()) {
+            Text(text = "Pinned Notes", fontWeight = FontWeight.Bold, fontSize = 18.sp)
             Spacer(modifier = Modifier.height(16.dp))
             
-            recentNotes.chunked(3).forEach { rowNotes ->
+            pinnedNotes.chunked(3).forEach { rowNotes ->
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -167,14 +177,16 @@ fun NotesContentWithSections(
             }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        if (pinnedNotes.isNotEmpty() && recentNotes.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(24.dp))
+        }
 
-        // --- Pinned Notes Section ---
-        if (pinnedNotes.isNotEmpty()) {
-            Text(text = "Pinned Notes", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+        // --- Recent Notes Section ---
+        if (recentNotes.isNotEmpty()) {
+            Text(text = "Recent Notes", fontWeight = FontWeight.Bold, fontSize = 18.sp)
             Spacer(modifier = Modifier.height(16.dp))
             
-            pinnedNotes.chunked(3).forEach { rowNotes ->
+            recentNotes.chunked(3).forEach { rowNotes ->
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)

@@ -23,6 +23,9 @@ interface NoteDao{
     @Query("DELETE FROM notes WHERE id = :noteId")
     suspend fun deleteNoteById(noteId: Int)
 
+    @Query("SELECT * FROM notes WHERE id = :noteId")
+    suspend fun getNoteById(noteId: Int): Note?
+
     //nirdisto kno note search krar jnno
     @Query("SELECT * FROM notes WHERE title LIKE :searchQuery OR content LIKE :searchQuery")
     fun searchNotes(searchQuery: String): Flow<List<Note>>

@@ -72,8 +72,8 @@ fun NotizNavGraph(isLoggedIn: Boolean) {
             HomeScreen(
                 onAddNoteClick = { navController.navigate(Screen.AddNote.route) },
                 onNoteClick = { note ->
-                    // Data (ID, Title, Content, Pin status) pathano hocche
-                    navController.navigate("edit_note/${note.id}/${note.title}/${note.content}/${note.isPinned}")
+                    // 🚀 শুধু আইডি পাঠানো হচ্ছে
+                    navController.navigate("edit_note/${note.id}")
                 },
                 viewModel = noteViewModel
             )
@@ -92,34 +92,24 @@ fun NotizNavGraph(isLoggedIn: Boolean) {
             )
         }
 
-        // 6. Edit Note Screen (Real update logic)
+        // 6. Edit Note Screen (ID ভিত্তিক নেভিগেশন)
         composable(
-            route = "edit_note/{id}/{title}/{content}/{isPinned}",
+            route = "edit_note/{id}",
             arguments = listOf(
-                navArgument("id") { type = NavType.IntType },
-                navArgument("title") { type = NavType.StringType },
-                navArgument("content") { type = NavType.StringType },
-                navArgument("isPinned") { type = NavType.BoolType }
+                navArgument("id") { type = NavType.IntType }
             )
         ) { backStackEntry ->
             val id = backStackEntry.arguments?.getInt("id") ?: 0
-            val title = backStackEntry.arguments?.getString("title") ?: ""
-            val content = backStackEntry.arguments?.getString("content") ?: ""
-            val isPinned = backStackEntry.arguments?.getBoolean("isPinned") ?: false
 
             AddNoteScreen(
                 initialId = id,
-                initialTitle = title,
-                initialContent = content,
-                initialIsPinned = isPinned,
                 onBackClick = { navController.popBackStack() },
                 onSaveClick = { newTitle, newContent, newIsPinned ->
                     noteViewModel.saveNote(id = id, title = newTitle, content = newContent, isPinned = newIsPinned)
                     navController.popBackStack()
                 },
                 onDeleteClick = {
-                    // Yahan se delete function call korbo
-                    noteViewModel.deleteNotedById(id)
+                    noteViewModel.deleteNoteById(id)
                     navController.popBackStack()
                 }
             )

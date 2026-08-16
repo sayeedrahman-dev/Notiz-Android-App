@@ -30,17 +30,27 @@ import com.sayeed_dev.notiz.ui.theme.PrimaryDark
 @Composable
 fun AddNoteScreen(
     initialId: Int = 0,
-    initialTitle: String = "",
-    initialContent: String = "",
-    initialIsPinned: Boolean = false,
+    viewModel: com.sayeed_dev.notiz.ui.viewmodel.NoteViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
     onBackClick: () -> Unit,
     onSaveClick: (String, String, Boolean) -> Unit,
     onDeleteClick: () -> Unit = {}
 ) {
     // 1. States for Input and UI logic
-    var title by remember { mutableStateOf(initialTitle) }
-    var content by remember { mutableStateOf(initialContent) }
-    var isPinned by remember { mutableStateOf(initialIsPinned) }
+    var title by remember { mutableStateOf("") }
+    var content by remember { mutableStateOf("") }
+    var isPinned by remember { mutableStateOf(false) }
+
+    // যদি এডিট মুড হয়, ডাটাবেস থেকে লোড করো
+    LaunchedEffect(initialId) {
+        if (initialId != 0) {
+            val note = viewModel.getNoteById(initialId)
+            note?.let {
+                title = it.title
+                content = it.content
+                isPinned = it.isPinned
+            }
+        }
+    }
     
     var showExitDialog by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }

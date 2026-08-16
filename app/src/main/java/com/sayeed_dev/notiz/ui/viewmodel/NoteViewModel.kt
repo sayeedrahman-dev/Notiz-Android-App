@@ -43,8 +43,13 @@ class NoteViewModel(application: Application) : AndroidViewModel(application){
         }
     }
 
+    // নির্দিষ্ট একটি নোট আইডি দিয়ে খুঁজে বের করা
+    suspend fun getNoteById(id: Int): Note? {
+        return noteDao.getNoteById(id)
+    }
+
     //Note delete krar jnno ai logic
-    fun deleteNotedById(id: Int){
+    fun deleteNoteById(id: Int){
         viewModelScope.launch {
             noteDao.deleteNoteById(id)
         }
