@@ -83,9 +83,9 @@ fun NotizNavGraph(isLoggedIn: Boolean) {
         composable(route = Screen.AddNote.route) {
             AddNoteScreen(
                 onBackClick = { navController.popBackStack() },
-                onSaveClick = { title, content, isPinned ->
+                onSaveClick = { title, content, isPinned, color ->
                     if (title.isNotEmpty() || content.isNotEmpty()) {
-                        noteViewModel.saveNote(title = title, content = content, isPinned = isPinned)
+                        noteViewModel.saveNote(title = title, content = content, isPinned = isPinned, color = color)
                     }
                     navController.popBackStack()
                 }
@@ -104,8 +104,8 @@ fun NotizNavGraph(isLoggedIn: Boolean) {
             AddNoteScreen(
                 initialId = id,
                 onBackClick = { navController.popBackStack() },
-                onSaveClick = { newTitle, newContent, newIsPinned ->
-                    noteViewModel.saveNote(id = id, title = newTitle, content = newContent, isPinned = newIsPinned)
+                onSaveClick = { newTitle, newContent, newIsPinned, newColor ->
+                    noteViewModel.saveNote(id = id, title = newTitle, content = newContent, isPinned = newIsPinned, color = newColor)
                     navController.popBackStack()
                 },
                 onDeleteClick = {

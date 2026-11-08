@@ -30,14 +30,15 @@ class NoteViewModel(application: Application) : AndroidViewModel(application){
     fun onSearchQueryChanged(query : String){
         searchQuery.value  = query
     }
-    fun saveNote(id: Int = 0, title: String, content: String, isPinned: Boolean){
+    fun saveNote(id: Int = 0, title: String, content: String, isPinned: Boolean, color: Int = 0xFFFFFFFF.toInt()){
         viewModelScope.launch {
             val note = Note(
                 id = id,
                 title = title,
                 content = content,
                 timestamp = System.currentTimeMillis(),
-                isPinned = isPinned
+                isPinned = isPinned,
+                color = color
             )
             noteDao.insertNote(note)
         }
